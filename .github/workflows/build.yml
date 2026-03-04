@@ -57,9 +57,7 @@ jobs:
       - name: Sonar Analyses
         uses: sonarsource/sonarqube-scan-action@master
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           SONAR_TOKEN: '${{ secrets.SONAR_TOKEN }}'
-          SONAR_HOST_URL: '${{ secrets.SONAR_HOST_URL }}'
         with:
           args: >
             -Dsonar.verbose=true -Dsonar.projectKey=Ant_Project_CLI
@@ -68,6 +66,7 @@ jobs:
             -Dsonar.java.libraries="/home/runner/work/SimpleAntProject/SimpleAntProject/lib"
             -Dsonar.java.binaries="/home/runner/work/SimpleAntProject/SimpleAntProject/target/classes"
             -Dsonar.java.test.binaries="/home/runner/work/SimpleAntProject/SimpleAntProject/target/test-classes"
+            -Dsonar.organization=rakesh-upadhye-sonarsource
             -Dsonar.java.test.libraries="/home/runner/work/SimpleAntProject/SimpleAntProject/lib"            
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.coverage.jacoco.xmlReportPaths="/home/runner/work/SimpleAntProject/SimpleAntProject/target/reports/jacoco/jacoco.xml"
