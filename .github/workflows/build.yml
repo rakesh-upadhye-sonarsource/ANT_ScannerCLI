@@ -44,7 +44,7 @@ jobs:
         run: ant report -d
 
       - name: List the contents of coverage directory
-        run: ls -ltr /home/runner/work/SimpleAntProject/SimpleAntProject/target/reports/jacoco
+        run: ls -ltr "$RUNNER_WORKSPACE/SimpleAntProject/SimpleAntProject/target/reports/jacoco"
         
       - name: Upload Coverage Report
         if: always()
@@ -63,10 +63,10 @@ jobs:
             -Dsonar.verbose=true -Dsonar.projectKey=Ant_Project_CLI
             -Dsonar.projectVersion=1.0 -Dsonar.sources="src/"
             -Dsonar.tests="test/"
-            -Dsonar.java.libraries="/home/runner/work/SimpleAntProject/SimpleAntProject/lib"
-            -Dsonar.java.binaries="/home/runner/work/SimpleAntProject/SimpleAntProject/target/classes"
-            -Dsonar.java.test.binaries="/home/runner/work/SimpleAntProject/SimpleAntProject/target/test-classes"
+            -Dsonar.java.libraries="$RUNNER_WORKSPACE/SimpleAntProject/SimpleAntProject/lib"
+            -Dsonar.java.binaries="$RUNNER_WORKSPACE/SimpleAntProject/SimpleAntProject/target/classes"
+            -Dsonar.java.test.binaries="$RUNNER_WORKSPACE/SimpleAntProject/SimpleAntProject/target/test-classes"
             -Dsonar.organization=rakesh-upadhye-sonarsource
-            -Dsonar.java.test.libraries="/home/runner/work/SimpleAntProject/SimpleAntProject/lib"            
+            -Dsonar.java.test.libraries="$RUNNER_WORKSPACE/SimpleAntProject/SimpleAntProject/lib"            
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.coverage.jacoco.xmlReportPaths="/home/runner/work/SimpleAntProject/SimpleAntProject/target/reports/jacoco/jacoco.xml"
+            -Dsonar.coverage.jacoco.xmlReportPaths="$RUNNER_WORKSPACE/SimpleAntProject/SimpleAntProject/target/reports/jacoco/jacoco.xml"
