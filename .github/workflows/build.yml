@@ -65,7 +65,7 @@ jobs:
             -Dsonar.tests="test/"
             -Dsonar.java.libraries="/home/runner/work/ANT_ScannerCLI/ANT_ScannerCLI/lib"
             -Dsonar.java.binaries="/home/runner/work/ANT_ScannerCLI/ANT_ScannerCLI/target/classes"
-            -Dsonar.java.test.binaries="$RUNNER_WORKSPACE/ANT_ScannerCLI/target/test-classes"
+            -Dsonar.java.test.binaries="/home/runner/work/ANT_ScannerCLI/ANT_ScannerCLI/target/test-classes"
             -Dsonar.organization=rakesh-upadhye-sonarsource
             -Dsonar.java.test.libraries="/home/runner/work/ANT_ScannerCLI/ANT_ScannerCLI/lib"            
             -Dsonar.sourceEncoding=UTF-8
