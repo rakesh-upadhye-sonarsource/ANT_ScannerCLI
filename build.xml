@@ -1,0 +1,96 @@
+<project name="JacocoAntProject" default="all" 
+         xmlns:jacoco="antlib:org.jacoco.ant"
+         xmlns:ivy="antlib:org.apache.ivy.ant"> 
+	
+    <property name="src.dir" location="src/"/>
+    <property name="test.dir" location="test/"/>
+    <property name="lib.dir" location="lib"/>
+    <property name="build.dir" location="target"/>
+    <property name="classes.dir" location="${build.dir}/classes"/>
+    <property name="test.classes.dir" location="${build.dir}/test-classes"/>
+    <property name="report.dir" location="${build.dir}/reports"/>
+    
+    <property name="junit.report.dir" location="${report.dir}/junit"/>
+    <property name="jacoco.report.dir" location="${report.dir}/jacoco"/>
+    <property name="jacoco.exec.file" location="${build.dir}/jacoco.exec"/>
+
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${lib.dir}/jacocoant.jar"/>
+    </taskdef>
+
+	<target name="resolve">
+        <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision]-[type].[ext]"/>
+        <get src="https://repo1.maven.org/maven2/org/jacoco/org.jacoco.ant/0.8.10/org.jacoco.ant-0.8.10-nodeps.jar"
+             dest="${lib.dir}/jacocoant.jar" skipexisting="true"/>
+    </target>
+
+	<target name="clean" description="Delete the target directory">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="prepare" depends="clean">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${test.classes.dir}"/>
+        <mkdir dir="${junit.report.dir}"/>
+        <mkdir dir="${jacoco.report.dir}"/>
+    </target>
+	
+
+
+    <target name="compile" depends="prepare">
+      	<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false" debug="true">
+       		 <classpath>
+           		 <fileset dir="${lib.dir}" includes="*.jar"/>
+       		 </classpath>
+    	</javac>
+        <javac srcdir="${test.dir}" destdir="${test.classes.dir}" includeantruntime="false" debug="true">
+            <classpath>
+                <pathelement path="${classes.dir}"/>
+                <fileset dir="${lib.dir}" includes="*.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test" depends="compile">
+        <jacoco:coverage destfile="${jacoco.exec.file}">
+            <junit fork="true" printsummary="yes" haltonfailure="no">
+                <classpath>
+                    <pathelement path="${classes.dir}"/>
+                    <pathelement path="${test.classes.dir}"/>
+                    <fileset dir="${lib.dir}" includes="*.jar"/>
+                </classpath>
+
+                <formatter type="xml"/>
+                
+                <batchtest todir="${junit.report.dir}">
+                    <fileset dir="${test.dir}" includes="**/*Test.java"/>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
+    </target>
+
+    <target name="report" depends="test">
+        <junitreport todir="${junit.report.dir}">
+            <fileset dir="${junit.report.dir}" includes="TEST-*.xml"/>
+            <report format="frames" todir="${junit.report.dir}/html"/>
+        </junitreport>
+
+        <jacoco:report>
+            <executiondata>
+                <file file="${jacoco.exec.file}"/>
+            </executiondata>
+            <structure name="JaCoCo Ant Project">
+                <classfiles>
+                    <fileset dir="${classes.dir}"/>
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}"/>
+                </sourcefiles>
+            </structure>
+            <xml destfile="${jacoco.report.dir}/jacoco.xml"/>
+            <html destdir="${jacoco.report.dir}/html"/>
+        </jacoco:report>
+    </target>
+
+    <target name="all" depends="clean, report"/>
+</project>

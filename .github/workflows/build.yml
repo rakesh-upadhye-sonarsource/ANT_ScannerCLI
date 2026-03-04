@@ -1,0 +1,73 @@
+name: Java Ant CI with Coverage
+'on':
+  push:
+    branches:
+      - main
+      - feature1
+      - feature2
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     
+          
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: zulu
+          
+      - name: Install Ant Dependencies (Ivy & JaCoCo)
+        run: >
+          mkdir -p ~/.ant/lib
+
+          # Download Ivy for dependency management
+
+          curl -L
+          https://repo1.maven.org/maven2/org/apache/ivy/ivy/2.5.2/ivy-2.5.2.jar
+          -o ~/.ant/lib/ivy.jar
+
+          # Download JaCoCo Ant Tasks to prevent "Taskdef not found" errors
+          curl -L
+          https://repo1.maven.org/maven2/org/jacoco/org.jacoco.ant/0.8.11/org.jacoco.ant-0.8.11-nodeps.jar
+          -o ~/.ant/lib/jacocoant.jar
+          
+      - name: Run Build and Generate Report
+        run: ant report -d
+
+      - name: List the contents of coverage directory
+        run: ls -ltr /home/runner/work/SimpleAntProject/SimpleAntProject/target/reports/jacoco
+        
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-coverage-report
+          path: report/coverage-report/
+          retention-days: 5
+          
+      - name: Sonar Analyses
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          SONAR_TOKEN: '${{ secrets.SONAR_TOKEN }}'
+          SONAR_HOST_URL: '${{ secrets.SONAR_HOST_URL }}'
+        with:
+          args: >
+            -Dsonar.verbose=true -Dsonar.projectKey=Ant_Project_CLI
+            -Dsonar.projectVersion=1.0 -Dsonar.sources="src/"
+            -Dsonar.tests="test/"
+            -Dsonar.java.libraries="/home/runner/work/SimpleAntProject/SimpleAntProject/lib"
+            -Dsonar.java.binaries="/home/runner/work/SimpleAntProject/SimpleAntProject/target/classes"
+            -Dsonar.java.test.binaries="/home/runner/work/SimpleAntProject/SimpleAntProject/target/test-classes"
+            -Dsonar.java.test.libraries="/home/runner/work/SimpleAntProject/SimpleAntProject/lib"            
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.coverage.jacoco.xmlReportPaths="/home/runner/work/SimpleAntProject/SimpleAntProject/target/reports/jacoco/jacoco.xml"
