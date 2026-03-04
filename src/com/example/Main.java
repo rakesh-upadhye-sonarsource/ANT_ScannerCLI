@@ -25,4 +25,9 @@ public class Main {
     public void multiply(int a, int b){
         System.out.println("Product of two nos is : " + a * b);
     }
+
+        public void subtract(int a, int b){
+        System.out.println("Product of two nos is : " + a - b);
+    }    
+    
 }
